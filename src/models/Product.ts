@@ -42,5 +42,10 @@ const ProductSchema = new Schema<IProduct>(
   { timestamps: true }
 );
 
+if (mongoose.models && mongoose.models.Product) {
+  delete (mongoose.models as any).Product;
+}
+
 export const Product: Model<IProduct> =
-  mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
+  mongoose.model<IProduct>('Product', ProductSchema);
+

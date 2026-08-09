@@ -1,69 +1,93 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+// src/app/page.tsx
+import AnnouncementBar from '@/components/AnnouncementBar';
+import Navbar from '@/components/Navbar';
+import HeroSection from '@/components/HeroSection';
+import CategoryStrip from '@/components/CategoryStrip';
+import FeaturedProducts from '@/components/FeaturedProducts';
+import TierCards from '@/components/TierCards';
+import KeychainsSection from '@/components/KeychainsSection';
+import PaletteStrip from '@/components/PaletteStrip';
+import Testimonials from '@/components/Testimonials';
+import Tutorials from '@/components/Tutorials';
+import NewsletterFooter from '@/components/NewsletterFooter';
+import { connectDB } from '@/lib/db';
+import { Product } from '@/models/Product';
+import type { ProductCardData } from '@/components/ProductCard';
 
-export default function Home() {
+// Map a raw Mongoose lean doc → ProductCardData
+function mapProduct(p: Record<string, unknown>): ProductCardData {
+  return {
+    _id:           (p._id as { toString(): string }).toString(),
+    name:          p.name as string,
+    price:         p.price as number,
+    originalPrice: p.originalPrice as number | undefined,
+    tier:          p.tier as string,
+    category:      p.category as string,
+    image:         p.image as string,
+    colors:        (p.colors as string[]) || [],
+    inStock:       p.inStock as boolean,
+    isNewArrival:  p.isNewArrival as boolean,
+    isBestseller:  p.isBestseller as boolean,
+    rating:        (p.rating as number) || 0,
+    reviewsCount:  (p.reviewsCount as number) || 0,
+  };
+}
+
+async function getFeaturedProducts(): Promise<ProductCardData[]> {
+  try {
+    await connectDB();
+
+    // Prioritise new arrivals + bestsellers, then any in-stock product
+    const docs = await Product
+      .find({ inStock: true })
+      .sort({ isNewArrival: -1, isBestseller: -1, createdAt: -1 })
+      .limit(6)
+      .lean();
+
+    return docs.map((p) => mapProduct(p as unknown as Record<string, unknown>));
+  } catch (err) {
+    console.error('getFeaturedProducts error:', err);
+    return [];
+  }
+}
+
+async function getKeychainProducts(): Promise<ProductCardData[]> {
+  try {
+    await connectDB();
+
+    // Keychains: category name contains "keychain" (case-insensitive)
+    const docs = await Product
+      .find({ inStock: true, category: { $regex: /keychain/i } })
+      .sort({ createdAt: -1 })
+      .limit(8)
+      .lean();
+
+    return docs.map((p) => mapProduct(p as unknown as Record<string, unknown>));
+  } catch (err) {
+    console.error('getKeychainProducts error:', err);
+    return [];
+  }
+}
+
+export default async function HomePage() {
+  const [featuredProducts, keychainProducts] = await Promise.all([
+    getFeaturedProducts(),
+    getKeychainProducts(),
+  ]);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main>
+      <AnnouncementBar />
+      <Navbar />
+      <HeroSection />
+      <CategoryStrip />
+      <FeaturedProducts products={featuredProducts} />
+      <TierCards />
+      <KeychainsSection initialProducts={keychainProducts} />
+      <PaletteStrip />
+      <Testimonials />
+      <Tutorials />
+      <NewsletterFooter />
+    </main>
   );
 }

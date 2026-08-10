@@ -56,6 +56,7 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
 
   function handleSearchSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -71,6 +72,13 @@ export default function Navbar() {
         if (data.user) {
           setUser(data.user);
         }
+      })
+      .catch(() => {});
+
+    fetch('/api/settings?key=logoUrl')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.value) setLogoUrl(data.value);
       })
       .catch(() => {});
   }, []);
@@ -97,7 +105,11 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <Link href="/" className="navbar-logo">
-        <TrianyaaLogo />
+        {logoUrl ? (
+          <img src={logoUrl} alt="TRIANYAA Logo" className="logo-emblem" style={{ objectFit: 'contain' }} />
+        ) : (
+          <TrianyaaLogo />
+        )}
         <div className="logo-text-group">
           <span className="logo-brand serif">TRIANYAA</span>
           <span className="logo-tagline">Handmade with Love</span>
@@ -183,6 +195,13 @@ export default function Navbar() {
                       📊 Admin Panel
                     </Link>
                   )}
+                  <Link
+                    href="/dashboard"
+                    className="user-dropdown-link"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    👤 My Profile
+                  </Link>
                   <Link
                     href="/shop"
                     className="user-dropdown-link"

@@ -17,6 +17,7 @@ function AdminSidebar() {
         <Link href="/admin">📊 Dashboard</Link>
         <Link href="/admin/products">📦 Products</Link>
         <Link href="/admin/products/new">➕ Add Product</Link>
+        <Link href="/admin/settings">⚙️ Settings</Link>
         <Link href="/" style={{ marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,.1)', paddingTop: '12px' }}>
           🏠 View Store
         </Link>

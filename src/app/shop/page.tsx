@@ -69,7 +69,7 @@ export default async function ShopPage({
   const activeCategory = params.category || '';
   const activeSort = params.sort || 'newest';
 
-  const categories = ['Yarn', 'Kit', 'Keychain', 'Accessory'];
+  const categories = ['Keychain', 'Flowers', 'Bouquet'];
   const tiers = ['Basic', 'Standard', 'Premium'];
 
   return (
@@ -136,7 +136,7 @@ export default async function ShopPage({
                     activeCategory === c.toLowerCase() ? ' active' : ''
                   }`}
                 >
-                  {c === 'Kit' ? 'Crochet Kit' : c}
+                  {c}
                 </Link>
               ))}
             </div>

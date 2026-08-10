@@ -29,7 +29,7 @@ export default function ProductForm({ initialData = {}, mode }: ProductFormProps
   const [price,         setPrice]         = useState(initialData.price?.toString() || '');
   const [originalPrice, setOriginalPrice] = useState(initialData.originalPrice?.toString() || '');
   const [tier,          setTier]          = useState(initialData.tier || 'Basic');
-  const [category,      setCategory]      = useState(initialData.category || 'Yarn');
+  const [category,      setCategory]      = useState(initialData.category || 'Keychain');
   const [colors,        setColors]        = useState((initialData.colors || []).join(', '));
   const [includedItems, setIncludedItems] = useState((initialData.includedItems || []).join(', '));
   const [inStock,       setInStock]       = useState(initialData.inStock !== false);
@@ -133,10 +133,9 @@ export default function ProductForm({ initialData = {}, mode }: ProductFormProps
         <div>
           <label className="form-label" htmlFor="pf-category">Category *</label>
           <select id="pf-category" className="form-select" value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="Yarn">Yarn</option>
-            <option value="Kit">Crochet Kit</option>
             <option value="Keychain">Keychain</option>
-            <option value="Accessory">Accessory</option>
+            <option value="Flowers">Flowers</option>
+            <option value="Bouquet">Bouquet</option>
           </select>
         </div>
 

@@ -92,12 +92,10 @@ export default function Navbar() {
       </Link>
 
       <ul className="navbar-links">
-        <li><Link href="/shop">Shop</Link></li>
+        <li><Link href="/">Home</Link></li>
         <li><Link href="/shop?tier=basic">Basic</Link></li>
         <li><Link href="/shop?tier=standard">Standard</Link></li>
         <li><Link href="/shop?tier=premium">Premium</Link></li>
-        <li><Link href="/shop?category=keychain">Keychains</Link></li>
-        <li><Link href="/tutorials">Tutorials</Link></li>
       </ul>
 
       <div className="navbar-actions">

@@ -4,11 +4,11 @@ import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import CategoryStrip from '@/components/CategoryStrip';
 import FeaturedProducts from '@/components/FeaturedProducts';
+import GallerySection from '@/components/GallerySection';
+import BrandStory from '@/components/BrandStory';
 import TierCards from '@/components/TierCards';
 import KeychainsSection from '@/components/KeychainsSection';
-import PaletteStrip from '@/components/PaletteStrip';
 import Testimonials from '@/components/Testimonials';
-import Tutorials from '@/components/Tutorials';
 import NewsletterFooter from '@/components/NewsletterFooter';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
@@ -84,12 +84,14 @@ export default async function HomePage() {
       <HeroSection />
       <CategoryStrip />
       <FeaturedProducts products={featuredProducts} />
+      <GallerySection />
+      <BrandStory />
       <TierCards />
       <KeychainsSection initialProducts={keychainProducts} />
-      <PaletteStrip />
       <Testimonials />
-      <Tutorials />
       <NewsletterFooter />
     </main>
   );
 }
+
+

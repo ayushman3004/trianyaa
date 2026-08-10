@@ -1,4 +1,6 @@
 // src/components/FeaturedProducts.tsx
+'use client';
+import { motion, Variants } from 'framer-motion';
 import ProductCard, { ProductCardData } from './ProductCard';
 
 // Shown only when MongoDB returns 0 products
@@ -10,7 +12,7 @@ const MOCK_PRODUCTS: ProductCardData[] = [
     originalPrice: 449,
     tier: 'Basic',
     category: 'Bouquet',
-    image: '',
+    image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786277733/trianyaa/products/larfaoyc7yembyzvsrg7.png',
     colors: ['#EFC5B5','#F5D9CE','#FAF6EF'],
     inStock: true,
     isNewArrival: true,
@@ -27,7 +29,7 @@ const MOCK_PRODUCTS: ProductCardData[] = [
     originalPrice: undefined,
     tier: 'Standard',
     category: 'Flowers',
-    image: '',
+    image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786208942/trianyaa/products/ufvas8tikwejg0i3t4t8.png',
     colors: ['#7B9E87','#A8C5B0','#DFF0E4'],
     inStock: true,
     isNewArrival: false,
@@ -44,7 +46,7 @@ const MOCK_PRODUCTS: ProductCardData[] = [
     originalPrice: undefined,
     tier: 'Basic',
     category: 'Keychain',
-    image: '',
+    image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786189707/trianyaa/products/secyqfwrjknx3zbkihgj.png',
     colors: ['#C9963C','#E8BC68','#F5EFE6'],
     inStock: true,
     isNewArrival: false,
@@ -61,7 +63,7 @@ const MOCK_PRODUCTS: ProductCardData[] = [
     originalPrice: 1499,
     tier: 'Premium',
     category: 'Bouquet',
-    image: '',
+    image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786190028/trianyaa/products/htufxkg6p4bx2s8nejpv.png',
     colors: ['#C4624A','#D4785F','#F0E0D8'],
     inStock: true,
     isNewArrival: true,
@@ -78,13 +80,13 @@ const MOCK_PRODUCTS: ProductCardData[] = [
     originalPrice: undefined,
     tier: 'Standard',
     category: 'Bouquet',
-    image: '',
+    image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786189221/trianyaa/products/gzpnglxsgsdxkt8jtseq.png',
     colors: ['#7B9E87','#2D5016','#F5EFE6'],
-    inStock: false,
+    inStock: true,
     isNewArrival: false,
     isBestseller: false,
-    rating: 0,
-    reviewsCount: 0,
+    rating: 4.6,
+    reviewsCount: 15,
     description: 'A soothing sage green rose bouquet, ideal for cottage core styling and table decor.',
     includedItems: ['4 Green and white roses', 'Sage ribbon wrap'],
   },
@@ -95,7 +97,7 @@ const MOCK_PRODUCTS: ProductCardData[] = [
     originalPrice: 349,
     tier: 'Basic',
     category: 'Keychain',
-    image: '',
+    image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786189707/trianyaa/products/secyqfwrjknx3zbkihgj.png',
     colors: ['#EFC5B5','#C9963C','#7B9E87','#C4624A'],
     inStock: true,
     isNewArrival: false,
@@ -111,22 +113,58 @@ interface FeaturedProductsProps {
   products?: ProductCardData[];
 }
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
+};
+
 export default function FeaturedProducts({ products }: FeaturedProductsProps) {
   const displayProducts = products && products.length > 0 ? products : MOCK_PRODUCTS;
 
   return (
     <section className="featured-products">
-      <div className="section-header">
-        <div className="section-eyebrow">Handpicked for You</div>
-        <h2 className="section-title serif">Featured Products</h2>
-        <p className="section-sub">
-          From vibrant skeins to adorable keychains — every piece tells a story.
-        </p>
-      </div>
-      <div className="products-grid">
-        {displayProducts.map((p) => (
-          <ProductCard key={p._id} product={p} />
-        ))}
+      <div className="container">
+        <motion.div
+          className="section-header center"
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.6 }}
+        >
+          <span className="section-eyebrow">FEATURED CREATIONS</span>
+          <h2 className="section-title serif">MADE TO BE LOVED</h2>
+          <p className="section-sub">
+            Handcrafted pieces for little moments that matter.
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="products-grid"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+        >
+          {displayProducts.map((p) => (
+            <motion.div key={p._id} variants={itemVariants}>
+              <ProductCard product={p} />
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

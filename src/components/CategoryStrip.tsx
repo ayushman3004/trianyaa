@@ -1,65 +1,108 @@
 // src/components/CategoryStrip.tsx
+'use client';
 import Link from 'next/link';
+import { motion, Variants } from 'framer-motion';
 
-const categories = [
+const collections = [
   {
-    name: 'Keychains',
-    href: '/shop?category=keychain',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        {/* Keychain / key */}
-        <circle cx="9" cy="9" r="5"/>
-        <path d="M14 14l6 6"/>
-        <path d="M14.5 14.5l1.5-1.5"/>
-        <path d="M18 17l1.5-1.5"/>
-      </svg>
-    ),
-  },
-  {
-    name: 'Flowers',
+    name: 'Crochet Flowers',
+    tagline: 'Everlasting floral beauty',
     href: '/shop?category=flowers',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        {/* Flower icon */}
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
-        <path d="M12 22a3 3 0 0 0 3-3v-4a3 3 0 0 0-6 0v4a3 3 0 0 0 3 3z"/>
-        <path d="M2 12a3 3 0 0 0 3 3h4a3 3 0 0 0 0-6H5a3 3 0 0 0-3 3z"/>
-        <path d="M22 12a3 3 0 0 0-3-3h-4a3 3 0 0 0 0 6h4a3 3 0 0 0 3-3z"/>
-      </svg>
-    ),
+    image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786208942/trianyaa/products/ufvas8tikwejg0i3t4t8.png',
+    gridClass: 'col-card-large',
   },
   {
-    name: 'Bouquets',
+    name: 'Handmade Keychains',
+    tagline: 'Little charms for everyday bags',
+    href: '/shop?category=keychain',
+    image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786189707/trianyaa/products/secyqfwrjknx3zbkihgj.png',
+    gridClass: 'col-card-medium',
+  },
+  {
+    name: 'Crochet Kits',
+    tagline: 'Everything you need to create',
+    href: '/shop?tier=standard',
+    image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786190028/trianyaa/products/htufxkg6p4bx2s8nejpv.png',
+    gridClass: 'col-card-medium',
+  },
+  {
+    name: 'Handmade Gifts',
+    tagline: 'Thoughtfully wrapped with love',
     href: '/shop?category=bouquet',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        {/* Bouquet icon */}
-        <path d="M12 22L7 10h10z" />
-        <circle cx="12" cy="6" r="3.5" />
-        <circle cx="7.5" cy="8" r="2.5" />
-        <circle cx="16.5" cy="8" r="2.5" />
-        <path d="M10.5 13.5c1-1.5 2-1.5 3 0" />
-        <circle cx="12" cy="14" r="1" />
-      </svg>
-    ),
+    image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786277733/trianyaa/products/larfaoyc7yembyzvsrg7.png',
+    gridClass: 'col-card-large',
   },
 ];
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
+};
+
 export default function CategoryStrip() {
   return (
-    <section className="category-strip">
-      <div className="category-strip-inner">
-        <h2 className="serif">Shop by Category</h2>
-        <div className="category-grid">
-          {categories.map((cat) => (
-            <Link key={cat.name} href={cat.href} className="category-card">
-              <div className="category-icon-wrap">{cat.icon}</div>
-              <span className="category-name">{cat.name}</span>
-              <span className="category-shop-link">Shop All →</span>
-            </Link>
+    <section className="collection-section">
+      <div className="container">
+        <motion.div
+          className="section-header center"
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.6 }}
+        >
+          <span className="section-eyebrow">HANDMADE CATEGORIES</span>
+          <h2 className="section-title serif">SHOP BY COLLECTION</h2>
+          <p className="section-sub">
+            Little handmade things, made to make you smile.
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="collection-grid"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+        >
+          {collections.map((item) => (
+            <motion.div
+              key={item.name}
+              className={`collection-card ${item.gridClass}`}
+              variants={itemVariants}
+              whileHover={{ y: -6 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Link href={item.href} style={{ display: 'block', width: '100%', height: '100%' }}>
+                <div className="collection-img-wrap">
+                  <img src={item.image} alt={item.name} loading="lazy" />
+                  <div className="collection-overlay" />
+                </div>
+                <div className="collection-content">
+                  <span className="collection-tagline script">{item.tagline}</span>
+                  <h3 className="collection-name serif">{item.name}</h3>
+                  <div className="collection-cta">
+                    Explore Collection
+                    <span className="arrow-icon">→</span>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

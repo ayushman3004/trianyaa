@@ -11,6 +11,7 @@ interface ShopSearchParams {
   tier?: string;
   category?: string;
   sort?: string;
+  search?: string;
 }
 
 // Convert DB product doc to card data format
@@ -29,6 +30,8 @@ function mapProduct(p: any): ProductCardData {
     isBestseller: p.isBestseller,
     rating: p.rating || 0,
     reviewsCount: p.reviewsCount || 0,
+    description: p.description || '',
+    includedItems: p.includedItems || [],
   };
 }
 
@@ -41,6 +44,12 @@ async function getProducts(filters: ShopSearchParams) {
   }
   if (filters.category) {
     query.category = { $regex: new RegExp(`^${filters.category}$`, 'i') };
+  }
+  if (filters.search) {
+    query.$or = [
+      { name: { $regex: new RegExp(filters.search, 'i') } },
+      { description: { $regex: new RegExp(filters.search, 'i') } },
+    ];
   }
 
   let sortOption: Record<string, number> = { createdAt: -1 };
@@ -90,6 +99,51 @@ export default async function ShopPage({
       <section className="shop-container">
         {/* Filters sidebar */}
         <aside className="shop-sidebar">
+          <div className="filter-group" style={{ marginBottom: 28 }}>
+            <h3 className="filter-title serif">Search</h3>
+            <form action="/shop" method="GET" style={{ position: 'relative' }}>
+              {params.category && <input type="hidden" name="category" value={params.category} />}
+              {params.tier && <input type="hidden" name="tier" value={params.tier} />}
+              {params.sort && <input type="hidden" name="sort" value={params.sort} />}
+              <input
+                type="text"
+                name="search"
+                defaultValue={params.search || ''}
+                placeholder="Type to search..."
+                style={{
+                  width: '100%',
+                  padding: '10px 36px 10px 14px',
+                  borderRadius: 'var(--r-md)',
+                  border: '1px solid rgba(44,44,44,.12)',
+                  fontSize: 13,
+                  outline: 'none',
+                  fontFamily: 'inherit',
+                  background: '#fff',
+                }}
+              />
+              <button
+                type="submit"
+                style={{
+                  position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', color: 'var(--warm-gray)', cursor: 'pointer',
+                  fontSize: 14
+                }}
+                aria-label="Search"
+              >
+                🔍
+              </button>
+            </form>
+            {params.search && (
+              <Link href={`/shop?${new URLSearchParams(
+                Object.fromEntries(
+                  Object.entries(params).filter(([k, v]) => k !== 'search' && v)
+                )
+              )}`} style={{ fontSize: 12, color: 'var(--terracotta)', marginTop: 8, display: 'inline-block', fontWeight: 500 }}>
+                Clear search
+              </Link>
+            )}
+          </div>
+
           <div className="filter-group">
             <h3 className="filter-title serif">Tiers</h3>
             <div className="filter-links">

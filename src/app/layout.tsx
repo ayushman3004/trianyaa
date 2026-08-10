@@ -2,7 +2,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
+import { WishlistProvider } from '@/context/WishlistContext';
 import CartDrawer from '@/components/CartDrawer';
+import WishlistDrawer from '@/components/WishlistDrawer';
 
 export const metadata: Metadata = {
   title: 'TRIANYAA — Handmade Crochet & Yarn Craft Brand',
@@ -25,8 +27,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <CartProvider>
-          {children}
-          <CartDrawer />
+          <WishlistProvider>
+            {children}
+            <CartDrawer />
+            <WishlistDrawer />
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>

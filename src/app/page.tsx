@@ -30,6 +30,8 @@ function mapProduct(p: Record<string, unknown>): ProductCardData {
     isBestseller:  p.isBestseller as boolean,
     rating:        (p.rating as number) || 0,
     reviewsCount:  (p.reviewsCount as number) || 0,
+    description:   (p.description as string) || '',
+    includedItems: (p.includedItems as string[]) || [],
   };
 }
 

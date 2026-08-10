@@ -1,7 +1,10 @@
 // src/components/ProductCard.tsx
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
+import ProductPreviewModal from './ProductPreviewModal';
 
 export interface ProductCardData {
   _id: string;
@@ -17,6 +20,8 @@ export interface ProductCardData {
   isBestseller: boolean;
   rating: number;
   reviewsCount: number;
+  description?: string;
+  includedItems?: string[];
 }
 
 interface ProductCardProps {
@@ -41,9 +46,17 @@ function discountPct(price: number, original: number) {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [wished, setWished] = useState(false);
   const [added, setAdded]   = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { addItem } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const wished = isInWishlist(product._id);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   const tierKey = product.tier.toLowerCase() as 'basic' | 'standard' | 'premium';
 
@@ -64,7 +77,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const pct         = hasDiscount ? discountPct(product.price, product.originalPrice!) : 0;
 
   return (
-    <div className="product-card">
+    <div className="product-card" onClick={() => setShowPreview(true)} style={{ cursor: 'pointer' }}>
       <div className="product-img-wrap">
         {product.image ? (
           <img src={product.image} alt={product.name} loading="lazy" />
@@ -75,7 +88,16 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Wishlist */}
         <button
           className={`wishlist-btn${wished ? ' active' : ''}`}
-          onClick={() => setWished(!wished)}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleWishlist({
+              _id: product._id,
+              name: product.name,
+              price: product.price,
+              tier: product.tier,
+              image: product.image,
+            });
+          }}
           aria-label="Add to wishlist"
         >
           {wished ? '♥' : '♡'}
@@ -134,7 +156,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Add to Cart */}
         <button
           className={`add-to-cart-btn${added ? ' added' : ''}${!product.inStock ? ' disabled' : ''}`}
-          onClick={handleAddToCart}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddToCart();
+          }}
           disabled={!product.inStock}
           aria-label={product.inStock ? `Add ${product.name} to cart` : 'Out of stock'}
           id={`add-to-cart-${product._id}`}
@@ -160,6 +185,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </button>
       </div>
+
+      {showPreview && mounted && createPortal(
+        <ProductPreviewModal
+          product={product}
+          onClose={() => setShowPreview(false)}
+          wished={wished}
+          toggleWishlist={toggleWishlist}
+        />,
+        document.body
+      )}
     </div>
   );
 }

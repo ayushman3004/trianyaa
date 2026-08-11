@@ -19,7 +19,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          NEW HANDMADE COLLECTION
+          HANDMADE COLLECTION FOR YOU
         </motion.span>
 
         <motion.h1
@@ -100,7 +100,7 @@ export default function HeroSection() {
               src="https://res.cloudinary.com/bt7qlmas/image/upload/v1786277733/trianyaa/products/larfaoyc7yembyzvsrg7.png"
               alt="Handmade Crochet Bouquet"
             />
-            <div className="collage-card-tag script">crafted by hand ✨</div>
+            <div className="collage-card-tag script">crafted by hand </div>
           </motion.div>
 
           {/* Secondary Medium Vertical Card */}
@@ -153,14 +153,14 @@ export default function HeroSection() {
           </motion.div>
 
           {/* Floating Craft Micro-Accents */}
-          <motion.div
+          {/* <motion.div
             className="hero-floating-pill"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
             🧶 100% Organic Cotton Yarn
-          </motion.div>
+          </motion.div> */}
           <motion.div
             className="hero-floating-note script"
             initial={{ opacity: 0, scale: 0.8 }}

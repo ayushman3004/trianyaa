@@ -1,5 +1,6 @@
 // src/components/FeaturedProducts.tsx
 'use client';
+import { useRef, useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import ProductCard, { ProductCardData } from './ProductCard';
 
@@ -134,33 +135,91 @@ const itemVariants: Variants = {
 
 export default function FeaturedProducts({ products }: FeaturedProductsProps) {
   const displayProducts = products && products.length > 0 ? products : MOCK_PRODUCTS;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  function checkScroll() {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setCanScrollLeft(scrollLeft > 10);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+  }
+
+  useEffect(() => {
+    checkScroll();
+    const el = scrollRef.current;
+    if (el) {
+      el.addEventListener('scroll', checkScroll);
+      window.addEventListener('resize', checkScroll);
+      return () => {
+        el.removeEventListener('scroll', checkScroll);
+        window.removeEventListener('resize', checkScroll);
+      };
+    }
+  }, []);
+
+  function scroll(direction: 'left' | 'right') {
+    if (!scrollRef.current) return;
+    const scrollAmount = 340;
+    scrollRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+  }
 
   return (
     <section className="featured-products">
       <div className="container">
-        <motion.div
-          className="section-header center"
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="section-eyebrow">FEATURED CREATIONS</span>
-          <h2 className="section-title serif">MADE TO BE LOVED</h2>
-          <p className="section-sub">
-            Handcrafted pieces for little moments that matter.
-          </p>
-        </motion.div>
+        <div className="featured-header-row">
+          <motion.div
+            className="section-header"
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="section-eyebrow">FEATURED CREATIONS</span>
+            <h2 className="section-title serif">MADE TO BE LOVED</h2>
+            <p className="section-sub">
+              Handcrafted pieces for little moments that matter.
+            </p>
+          </motion.div>
 
+          {/* Scroll Navigation Arrows */}
+          <div className="scroll-controls">
+            <button
+              onClick={() => scroll('left')}
+              className={`scroll-arrow-btn ${!canScrollLeft ? 'disabled' : ''}`}
+              aria-label="Scroll left"
+              disabled={!canScrollLeft}
+              title="Previous products"
+            >
+              ←
+            </button>
+            <button
+              onClick={() => scroll('right')}
+              className={`scroll-arrow-btn ${!canScrollRight ? 'disabled' : ''}`}
+              aria-label="Scroll right"
+              disabled={!canScrollRight}
+              title="Next products"
+            >
+              →
+            </button>
+          </div>
+        </div>
+
+        {/* Horizontal Scroll Gallery Container */}
         <motion.div
-          className="products-grid"
+          ref={scrollRef}
+          className="products-scroll-gallery"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
         >
           {displayProducts.map((p) => (
-            <motion.div key={p._id} variants={itemVariants}>
+            <motion.div key={p._id} className="scroll-gallery-item" variants={itemVariants}>
               <ProductCard product={p} />
             </motion.div>
           ))}

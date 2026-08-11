@@ -19,13 +19,13 @@ export default function BrandStory() {
             <div className="story-image-card">
               <img
                 src="https://res.cloudinary.com/bt7qlmas/image/upload/v1786277733/trianyaa/products/larfaoyc7yembyzvsrg7.png"
-                alt="Trianyaa Handmade Crochet Craft"
+                alt="Trianyaa Three Sisters Handmade Craft"
               />
-              <div className="story-badge script">100% Handcrafted</div>
+              <div className="story-badge script">Handmade with Love 💕</div>
             </div>
             <div className="story-accent-card">
-              <span className="story-stat-number serif">100+</span>
-              <span className="story-stat-label">Hours of careful stitching every week</span>
+              <span className="story-stat-number serif">3 Sisters</span>
+              <span className="story-stat-label">One dream, building memories one stitch at a time</span>
             </div>
           </motion.div>
 
@@ -37,23 +37,43 @@ export default function BrandStory() {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, ease: 'easeOut', delay: 0.15 }}
           >
-            <span className="section-eyebrow">THE TRIANYAA STORY</span>
-            <h2 className="story-title serif">
-              Every Loop Has a Little Love in It.
+            <span className="section-eyebrow">OUR STORY 🌸</span>
+            <h2 className="story-title serif" style={{ fontSize: '32px', marginBottom: '20px' }}>
+              Three sisters. One dream. Handmade with love.
             </h2>
 
             <p className="story-text">
-              Trianyaa is about turning simple threads into something meaningful. Every piece is thoughtfully handmade, with patience, care and attention to the tiny details that make handmade creations special.
+              What started as a simple idea between three sisters slowly grew into something very close to our hearts.
             </p>
 
             <p className="story-text">
-              Whether you are gifting an everlasting bouquet to someone dear or choosing a kit to start your own handmade journey, each Trianyaa piece carries a little magic made to make everyday life cozy and bright.
+              We’ve always believed that the most meaningful gifts aren’t necessarily the most expensive ones—they’re the ones that carry a little piece of your heart. A thoughtful gesture, a beautiful handmade creation, or a small surprise can make someone feel truly special.
             </p>
 
-            <div className="story-cta-wrap">
+            <p className="story-text">
+              That belief inspired us to start our own little journey of creating handmade gifts for your loved ones.
+            </p>
+
+            <p className="story-text">
+              Every piece we make is thoughtfully designed, carefully handcrafted, and made with love. From choosing the colors and materials to adding the smallest finishing touch, we put our hearts into every creation because we know that our gifts become a part of someone else’s special moments.
+            </p>
+
+            <p className="story-text">
+              Our aim is simple: to make gifting more personal, meaningful, and memorable.
+            </p>
+
+            <p className="story-text">
+              Whether it’s a birthday, anniversary, wedding, celebration, or simply a “thinking of you” moment, we want our creations to help you express the feelings that words sometimes cannot.
+            </p>
+
+            <p className="story-text" style={{ fontWeight: 600, color: 'var(--terracotta)' }}>
+              We are three sisters building something together, one handmade gift at a time—and we’re so happy to have you be a part of our story. 💕
+            </p>
+
+            <div className="story-cta-wrap" style={{ marginTop: '24px' }}>
               <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.2 }}>
                 <Link href="/contact" className="story-cta">
-                  OUR STORY →
+                  GET IN TOUCH →
                 </Link>
               </motion.div>
             </div>

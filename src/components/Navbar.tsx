@@ -289,10 +289,14 @@ export default function Navbar() {
           onClick={() => setMenuOpen(false)}
           style={{
             position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(4px)',
-            zIndex: 99,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(41, 37, 34, 0.65)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            zIndex: 1100,
             display: 'flex',
             justifyContent: 'flex-start',
           }}
@@ -302,24 +306,52 @@ export default function Navbar() {
             onClick={(e) => e.stopPropagation()}
             style={{
               width: '85%',
-              maxWidth: '340px',
+              maxWidth: '320px',
               height: '100%',
               background: '#FFF8EF',
               color: '#292522',
               padding: '24px',
               display: 'flex',
               flexDirection: 'column',
-              boxShadow: '4px 0 20px rgba(0,0,0,0.2)',
+              boxShadow: '8px 0 30px rgba(0,0,0,0.25)',
               overflowY: 'auto',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-              <div className="serif" style={{ fontSize: '20px', fontWeight: 800, color: '#2D5016' }}>TRIANYAA</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(196,98,74,0.15)' }}>
+              <div className="navbar-logo">
+                {logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt="TRIANYAA Logo"
+                    className="logo-emblem"
+                    style={{ width: '40px', height: '40px', maxWidth: '40px', maxHeight: '40px', objectFit: 'contain', borderRadius: '8px', flexShrink: 0 }}
+                  />
+                ) : (
+                  <TrianyaaLightLogo />
+                )}
+                <div className="logo-text-group">
+                  <span className="logo-brand serif" style={{ fontSize: '18px' }}>TRIANYAA</span>
+                  <span className="logo-tagline" style={{ fontSize: '8px' }}>HANDMADE WITH LOVE</span>
+                </div>
+              </div>
               <button
                 onClick={() => setMenuOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#292522', padding: '6px' }}
+                aria-label="Close navigation menu"
+                style={{
+                  background: 'rgba(201, 103, 76, 0.1)',
+                  border: 'none',
+                  color: '#C9674C',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                }}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"/>
                   <line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
@@ -330,12 +362,12 @@ export default function Navbar() {
             <form onSubmit={handleSearchSubmit} style={{ marginBottom: '24px', position: 'relative' }}>
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '10px 14px',
+                  padding: '10px 16px',
                   borderRadius: '20px',
                   border: '1px solid rgba(196,98,74,0.3)',
                   background: '#fff',
@@ -350,11 +382,11 @@ export default function Navbar() {
             </form>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '15px', fontWeight: 600 }}>
-              <Link href="/" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px' }}>Home</Link>
-              <Link href="/shop" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px' }}>Shop All Products</Link>
-              <Link href="/shop?category=flowers" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px' }}>Crochet Flowers</Link>
-              <Link href="/shop?category=keychain" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px' }}>Handmade Keychains</Link>
-              <Link href="/contact" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px' }}>Contact Us</Link>
+              <Link href="/" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px', color: '#292522' }}>Home</Link>
+              <Link href="/shop" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px', color: '#292522' }}>Shop All Products</Link>
+              <Link href="/shop?category=flowers" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px', color: '#292522' }}>Crochet Flowers</Link>
+              <Link href="/shop?category=keychain" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px', color: '#292522' }}>Handmade Keychains</Link>
+              <Link href="/contact" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px', color: '#292522' }}>Contact Us</Link>
             </div>
 
             <div style={{ marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid rgba(44,44,44,0.1)', fontSize: '12px', color: '#8A8078' }}>

@@ -25,7 +25,7 @@ const GALLERY_ITEMS = [
     subtitle: 'For your loved one',
     image: 'https://res.cloudinary.com/bt7qlmas/image/upload/v1786189707/trianyaa/products/secyqfwrjknx3zbkihgj.png',
     span: 'gallery-card-standard',
-    badge: '100% Cotton',
+    badge: 'New',
   },
   {
     id: 4,

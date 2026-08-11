@@ -145,6 +145,7 @@ export default function Navbar() {
           <li><Link href="/shop">Shop</Link></li>
           <li><Link href="/shop?category=flowers">Flowers</Link></li>
           <li><Link href="/shop?category=keychain">Keychains</Link></li>
+          <li><Link href="/#story">Story</Link></li>
           <li><Link href="/contact">Contact</Link></li>
         </ul>
 
@@ -386,6 +387,7 @@ export default function Navbar() {
               <Link href="/shop" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px', color: '#292522' }}>Shop All Products</Link>
               <Link href="/shop?category=flowers" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px', color: '#292522' }}>Crochet Flowers</Link>
               <Link href="/shop?category=keychain" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px', color: '#292522' }}>Handmade Keychains</Link>
+              <Link href="/#story" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px', color: '#292522' }}>Our Story</Link>
               <Link href="/contact" onClick={() => setMenuOpen(false)} style={{ borderBottom: '1px solid rgba(44,44,44,0.08)', paddingBottom: '10px', color: '#292522' }}>Contact Us</Link>
             </div>
 

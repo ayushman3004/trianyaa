@@ -55,7 +55,7 @@ const itemVariants: Variants = {
 
 export default function CategoryStrip() {
   return (
-    <section className="collection-section">
+    <section className="collection-section" id="collections">
       <div className="container">
         <motion.div
           className="section-header center"

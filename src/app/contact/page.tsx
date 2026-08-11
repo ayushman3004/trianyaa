@@ -69,7 +69,7 @@ export default function ContactPage() {
                 <div className="contact-icon">✉️</div>
                 <div className="contact-details">
                   <h3>Email Us</h3>
-                  <p>hello@trianyaa.com</p>
+                  <p>ritikakaushik2484@gmail.com</p>
                   <span>We usually respond within 24 hours</span>
                 </div>
               </div>
@@ -78,7 +78,7 @@ export default function ContactPage() {
                 <div className="contact-icon">📞</div>
                 <div className="contact-details">
                   <h3>Call or WhatsApp</h3>
-                  <p>+91 98765 43210</p>
+                  <p>+91 9369554806</p>
                   <span>Mon – Sat, 10:00 AM – 6:00 PM IST</span>
                 </div>
               </div>
@@ -96,7 +96,7 @@ export default function ContactPage() {
                 <div className="contact-icon">📍</div>
                 <div className="contact-details">
                   <h3>Studio Location</h3>
-                  <p>Trianyaa Handmade Studio, India</p>
+                  <p>Trianyaa Handmade Studio,Gorakhpur,India</p>
                   <span>Crafted with love in small artisanal batches</span>
                 </div>
               </div>

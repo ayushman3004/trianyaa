@@ -48,7 +48,7 @@ const mainFooterLinks = [
   { label: 'Home', href: '/' },
   { label: 'Shop', href: '/shop' },
   { label: 'Collections', href: '/#collections' },
-  { label: 'Story', href: '/contact' },
+  { label: 'Story', href: '/#story' },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -60,10 +60,10 @@ const policyLinks = [
 ];
 
 const socialLinks = [
-  { label: 'Instagram', icon: '📸', href: 'https://instagram.com' },
-  { label: 'Pinterest', icon: '📌', href: 'https://pinterest.com' },
-  { label: 'WhatsApp', icon: '💬', href: 'https://wa.me' },
-  { label: 'YouTube', icon: '▶️', href: 'https://youtube.com' },
+  { label: 'Instagram', icon: '📸', href: 'https://www.instagram.com/tri_anyaa/' },
+  // { label: 'Pinterest', icon: '📌', href: 'https://pinterest.com' },
+  // { label: 'WhatsApp', icon: '💬', href: 'https://wa.me' },
+  // { label: 'YouTube', icon: '▶️', href: 'https://youtube.com' },
 ];
 
 export default function NewsletterFooter() {

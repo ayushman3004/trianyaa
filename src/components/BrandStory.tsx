@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function BrandStory() {
   return (
-    <section className="brand-story-section">
+    <section className="brand-story-section" id="story">
       <div className="container">
         <div className="brand-story-grid">
           {/* Image Side */}

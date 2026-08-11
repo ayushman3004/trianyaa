@@ -11,7 +11,7 @@ function getUserIdFromSession(req: NextRequest): string | null {
   return payload ? payload.uid : null;
 }
 
-// GET /api/orders — fetch order history
+// GET /api/orders — fetch order history for logged-in user
 export async function GET(req: NextRequest) {
   const uid = getUserIdFromSession(req);
   if (!uid) {
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ orders });
 }
 
-// POST /api/orders — place order
+// POST /api/orders — place order (direct or whatsapp)
 export async function POST(req: NextRequest) {
   const uid = getUserIdFromSession(req);
   if (!uid) {
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { items, totalAmount, shippingAddress } = body;
+    const { items, totalAmount, shippingAddress, orderSource } = body;
 
     if (!items || items.length === 0 || !totalAmount || !shippingAddress) {
       return NextResponse.json({ error: 'Missing required order details' }, { status: 400 });
@@ -44,12 +44,17 @@ export async function POST(req: NextRequest) {
       items,
       totalAmount,
       shippingAddress,
-      status: 'Processing',
+      orderSource: orderSource === 'whatsapp' ? 'whatsapp' : 'direct',
+      // WhatsApp orders start as Pending; direct orders start as Processing
+      status: orderSource === 'whatsapp' ? 'Pending' : 'Processing',
     });
 
     return NextResponse.json({ message: 'Order placed successfully', order }, { status: 201 });
-  } catch (err) {
-    console.error('Create order error:', err);
-    return NextResponse.json({ error: 'Failed to place order.' }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    const stack   = err instanceof Error ? err.stack   : '';
+    console.error('[POST /api/orders] Error:', message);
+    console.error(stack);
+    return NextResponse.json({ error: 'Failed to place order.', detail: message }, { status: 500 });
   }
 }

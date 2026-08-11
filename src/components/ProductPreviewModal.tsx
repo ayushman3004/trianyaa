@@ -289,7 +289,7 @@ export default function ProductPreviewModal({ product, onClose, wished, toggleWi
         </div>
       </div>
 
-      <style jsx global>{`
+      <style>{`
         @keyframes fadeUp {
           from {
             opacity: 0;

@@ -15,6 +15,7 @@ function AdminSidebar() {
       </div>
       <nav className="admin-nav">
         <Link href="/admin">📊 Dashboard</Link>
+        <Link href="/admin/orders">📋 Orders</Link>
         <Link href="/admin/products">📦 Products</Link>
         <Link href="/admin/products/new">➕ Add Product</Link>
         <Link href="/admin/settings">⚙️ Settings</Link>

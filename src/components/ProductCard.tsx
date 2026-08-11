@@ -46,9 +46,9 @@ function discountPct(price: number, original: number) {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [added, setAdded]   = useState(false);
+  const [added, setAdded]       = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted]   = useState(false);
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const wished = isInWishlist(product._id);

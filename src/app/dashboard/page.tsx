@@ -31,8 +31,19 @@ interface Order {
     phone: string;
   };
   status: string;
+  orderSource?: string;
   createdAt: string;
 }
+
+const STATUS_CONFIG: Record<string, { color: string; bg: string; icon: string }> = {
+  Pending:    { color: '#b45309', bg: '#fef3c7', icon: '⏳' },
+  Confirmed:  { color: '#1d4ed8', bg: '#dbeafe', icon: '✅' },
+  Processing: { color: '#c2410c', bg: '#ffedd5', icon: '🔄' },
+  Shipped:    { color: '#7c3aed', bg: '#ede9fe', icon: '🚚' },
+  Delivered:  { color: '#15803d', bg: '#dcfce7', icon: '🎉' },
+  Cancelled:  { color: '#dc2626', bg: '#fee2e2', icon: '✕'  },
+};
+
 
 function DashboardContent() {
   const searchParams = useSearchParams();
@@ -367,24 +378,41 @@ function DashboardContent() {
                             </div>
                             <div>
                               <div style={{ color: 'var(--warm-gray)', fontWeight: 500 }}>STATUS</div>
-                              <span
-                                style={{
-                                  display: 'inline-block',
-                                  fontWeight: 700,
-                                  fontSize: 11,
-                                  textTransform: 'uppercase',
-                                  color: order.status === 'Processing' ? 'var(--terracotta)' : 'var(--sage)',
-                                  marginTop: 2,
-                                }}
-                              >
-                                {order.status}
-                              </span>
+                              {(() => {
+                                const cfg = STATUS_CONFIG[order.status] ?? { color: 'var(--charcoal)', bg: 'rgba(44,44,44,.08)', icon: '•' };
+                                return (
+                                  <span style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                    marginTop: 4,
+                                    padding: '3px 10px',
+                                    borderRadius: 'var(--r-full)',
+                                    background: cfg.bg,
+                                    color: cfg.color,
+                                    fontWeight: 700,
+                                    fontSize: 11,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px',
+                                  }}>
+                                    {cfg.icon} {order.status}
+                                  </span>
+                                );
+                              })()}
                             </div>
                             <div>
                               <div style={{ color: 'var(--warm-gray)', fontWeight: 500 }}>ORDER ID</div>
-                              <div style={{ color: 'var(--charcoal)', fontFamily: 'monospace', marginTop: 2 }}>
-                                {order._id}
+                              <div style={{ color: 'var(--charcoal)', fontFamily: 'monospace', marginTop: 2, fontSize: 11 }}>
+                                #{order._id.slice(-8).toUpperCase()}
                               </div>
+                              {order.orderSource === 'whatsapp' && (
+                                <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#15803d', fontWeight: 600 }}>
+                                  <svg width="12" height="12" viewBox="0 0 32 32" fill="currentColor">
+                                    <path d="M16 0C7.164 0 0 7.163 0 16c0 2.822.737 5.476 2.027 7.784L0 32l8.44-2.012A15.93 15.93 0 0 0 16 32c8.836 0 16-7.163 16-16S24.836 0 16 0zm7.394 22.403c-.405-.202-2.395-1.18-2.767-1.315-.372-.135-.642-.202-.913.202-.27.405-1.047 1.315-1.283 1.585-.237.27-.473.303-.877.101-.405-.202-1.71-.63-3.257-2.011-1.203-1.074-2.016-2.401-2.252-2.806-.236-.404-.025-.623.177-.824.182-.18.405-.473.607-.71.202-.236.27-.404.405-.674.135-.27.067-.506-.034-.71-.101-.202-.913-2.2-1.25-3.013-.33-.792-.664-.685-.913-.698l-.776-.013c-.27 0-.71.101-1.081.506-.372.404-1.418 1.384-1.418 3.378s1.452 3.914 1.655 4.185c.202.27 2.859 4.365 6.93 6.118.97.418 1.727.668 2.317.855.972.31 1.857.267 2.556.162.78-.116 2.395-.979 2.733-1.924.337-.944.337-1.754.236-1.924-.101-.168-.372-.27-.776-.473z"/>
+                                  </svg>
+                                  Via WhatsApp
+                                </div>
+                              )}
                             </div>
                           </div>
 

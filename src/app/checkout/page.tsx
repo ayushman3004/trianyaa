@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import NewsletterFooter from '@/components/NewsletterFooter';
+import { formatOrderMessage, buildWhatsAppUrl, WAOrderItem } from '@/lib/whatsapp';
 
 export default function CheckoutPage() {
   const { items, totalPrice, totalItems, clearCart } = useCart();
@@ -20,8 +21,8 @@ export default function CheckoutPage() {
   const [state, setState] = useState('');
   const [postalCode, setPostalCode] = useState('');
   
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [waLoading, setWaLoading] = useState(false);
+  const [addressError, setAddressError] = useState('');
 
   // Fetch profile to pre-fill address
   useEffect(() => {
@@ -46,63 +47,86 @@ export default function CheckoutPage() {
 
   // Redirect to shop if cart is empty
   useEffect(() => {
-    if (items.length === 0 && !loading) {
+    if (items.length === 0 && !waLoading) {
       router.push('/shop');
     }
-  }, [items, loading, router]);
+  }, [items, waLoading, router]);
 
-  async function handlePlaceOrder(e: React.FormEvent) {
+  function validateAddress(): boolean {
+    if (!fullName.trim() || !phone.trim() || !addressLine1.trim() || !city.trim() || !state.trim() || !postalCode.trim()) {
+      setAddressError('Please fill in all required shipping fields before ordering via WhatsApp.');
+      // Scroll to top of form
+      document.getElementById('co-name')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+    setAddressError('');
+    return true;
+  }
+
+  async function handleWhatsAppOrder(e: React.FormEvent) {
     e.preventDefault();
     if (items.length === 0) return;
-    setLoading(true);
-    setError('');
+    if (!validateAddress()) return;
 
+    setWaLoading(true);
     const shippingFee = totalPrice >= 999 ? 0 : 60;
     const finalAmount = totalPrice + shippingFee;
 
-    const body = {
-      items: items.map((i) => ({
-        productId: i._id,
-        name: i.name,
-        price: i.price,
-        quantity: i.quantity,
-        image: i.image,
-        tier: i.tier,
-      })),
-      totalAmount: finalAmount,
-      shippingAddress: {
-        fullName,
-        addressLine1,
-        addressLine2,
-        city,
-        state,
-        postalCode,
-        phone,
-        country: 'India',
-      },
-    };
+    const waItems: WAOrderItem[] = items.map((i) => ({
+      productId: i._id,
+      name:      i.name,
+      tier:      i.tier,
+      price:     i.price,
+      quantity:  i.quantity,
+      image:     i.image,
+    }));
 
+    // 1. Save order to DB first
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          items: waItems,
+          totalAmount: finalAmount,
+          orderSource: 'whatsapp',
+          shippingAddress: {
+            fullName,
+            phone,
+            addressLine1,
+            addressLine2,
+            city,
+            state,
+            postalCode,
+            country: 'India',
+          },
+        }),
       });
 
-      const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'Failed to place order.');
-        setLoading(false);
+        const data = await res.json();
+        setAddressError(data.error || 'Could not save order. Please try again.');
+        setWaLoading(false);
         return;
       }
-
-      // Success! Clear cart and redirect
-      clearCart();
-      router.push('/dashboard?orderPlaced=true');
     } catch {
-      setError('Something went wrong. Please try again.');
-      setLoading(false);
+      setAddressError('Network error. Please check your connection and try again.');
+      setWaLoading(false);
+      return;
     }
+
+    // 2. Build WA message and open WhatsApp
+    const message = formatOrderMessage(
+      waItems,
+      { fullName, phone, addressLine1, addressLine2, city, state, postalCode },
+      shippingFee,
+    );
+    const url = buildWhatsAppUrl(message);
+    window.open(url, '_blank', 'noopener,noreferrer');
+
+    // 3. Clear cart and go to dashboard
+    clearCart();
+    router.push('/dashboard?orderPlaced=true');
   }
 
   const shippingFee = totalPrice >= 999 ? 0 : 60;
@@ -135,9 +159,9 @@ export default function CheckoutPage() {
               <h2 className="serif" style={{ fontSize: 20, marginBottom: 20, color: 'var(--charcoal)' }}>
                 Shipping Address
               </h2>
-              {error && <div className="form-error" style={{ marginBottom: 20 }}>{error}</div>}
+              {addressError && <div className="form-error" style={{ marginBottom: 20 }}>{addressError}</div>}
 
-              <form onSubmit={handlePlaceOrder} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <form onSubmit={handleWhatsAppOrder} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
                   <label className="form-label" htmlFor="co-name">Full Name *</label>
                   <input
@@ -229,13 +253,39 @@ export default function CheckoutPage() {
                   />
                 </div>
 
+                {addressError && (
+                  <div className="form-error" style={{ marginBottom: 4, fontSize: 13 }}>{addressError}</div>
+                )}
+
                 <button
+                  id="checkout-whatsapp-btn"
                   type="submit"
-                  disabled={loading}
-                  className="btn-primary"
-                  style={{ marginTop: 12, padding: '14px 28px', fontSize: 15 }}
+                  disabled={waLoading}
+                  style={{
+                    marginTop: 12,
+                    padding: '14px 28px',
+                    fontSize: 15,
+                    background: waLoading ? 'var(--sage)' : '#25D366',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 'var(--r-md)',
+                    fontWeight: 700,
+                    cursor: waLoading ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 10,
+                    transition: 'background 0.2s, transform 0.15s',
+                    boxShadow: '0 4px 16px rgba(37,211,102,.3)',
+                    width: '100%',
+                  }}
+                  onMouseEnter={(e) => { if (!waLoading) { e.currentTarget.style.background = '#1ebe5d'; e.currentTarget.style.transform = 'translateY(-1px)'; } }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = waLoading ? 'var(--sage)' : '#25D366'; e.currentTarget.style.transform = 'translateY(0)'; }}
                 >
-                  {loading ? 'Processing Order...' : `Place Order • ₹${(totalPrice + shippingFee).toLocaleString('en-IN')}`}
+                  <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
+                    <path d="M16 0C7.164 0 0 7.163 0 16c0 2.822.737 5.476 2.027 7.784L0 32l8.44-2.012A15.93 15.93 0 0 0 16 32c8.836 0 16-7.163 16-16S24.836 0 16 0zm0 29.333c-2.65 0-5.115-.72-7.23-1.974l-.518-.31-5.01 1.195 1.23-4.87-.337-.535A13.287 13.287 0 0 1 2.667 16C2.667 8.637 8.637 2.667 16 2.667S29.333 8.637 29.333 16 23.363 29.333 16 29.333zm7.394-9.93c-.405-.202-2.395-1.18-2.767-1.315-.372-.135-.642-.202-.913.202-.27.405-1.047 1.315-1.283 1.585-.237.27-.473.303-.877.101-.405-.202-1.71-.63-3.257-2.011-1.203-1.074-2.016-2.401-2.252-2.806-.236-.404-.025-.623.177-.824.182-.18.405-.473.607-.71.202-.236.27-.404.405-.674.135-.27.067-.506-.034-.71-.101-.202-.913-2.2-1.25-3.013-.33-.792-.664-.685-.913-.698l-.776-.013c-.27 0-.71.101-1.081.506-.372.404-1.418 1.384-1.418 3.378s1.452 3.914 1.655 4.185c.202.27 2.859 4.365 6.93 6.118.97.418 1.727.668 2.317.855.972.31 1.857.267 2.556.162.78-.116 2.395-.979 2.733-1.924.337-.944.337-1.754.236-1.924-.101-.168-.372-.27-.776-.473z"/>
+                  </svg>
+                  {waLoading ? 'Opening WhatsApp…' : `Order via WhatsApp • ₹${(totalPrice + shippingFee).toLocaleString('en-IN')}`}
                 </button>
               </form>
             </div>

@@ -10,6 +10,9 @@ export interface IOrderItem {
   tier: string;
 }
 
+export type OrderStatus = 'Pending' | 'Confirmed' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+export type OrderSource = 'whatsapp' | 'direct';
+
 export interface IOrder extends Document {
   userId: mongoose.Types.ObjectId;
   items: IOrderItem[];
@@ -24,7 +27,8 @@ export interface IOrder extends Document {
     country: string;
     phone: string;
   };
-  status: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+  status: OrderStatus;
+  orderSource: OrderSource;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -55,13 +59,37 @@ const OrderSchema = new Schema<IOrder>(
     },
     status: {
       type: String,
-      enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled'],
-      default: 'Processing',
+      enum: ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+      default: 'Pending',
       index: true,
+    },
+    orderSource: {
+      type: String,
+      enum: ['whatsapp', 'direct'],
+      default: 'direct',
     },
   },
   { timestamps: true }
 );
 
-export const Order: Model<IOrder> =
-  mongoose.models.Order || mongoose.model<IOrder>('Order', OrderSchema);
+// Safely get or create the model — handles Next.js hot-reload model caching
+let Order: Model<IOrder>;
+
+if (mongoose.models.Order) {
+  // If the cached model's schema has the old enum, overwrite it
+  const cachedEnums: string[] = (mongoose.models.Order.schema.path('status') as { options?: { enum?: string[] } })?.options?.enum ?? [];
+  if (!cachedEnums.includes('Pending')) {
+    // Old schema cached — delete and re-register
+    const models = mongoose.models as Record<string, unknown>;
+    delete models['Order'];
+    const connModels = mongoose.connection.models as Record<string, unknown>;
+    delete connModels['Order'];
+    Order = mongoose.model<IOrder>('Order', OrderSchema);
+  } else {
+    Order = mongoose.models.Order as Model<IOrder>;
+  }
+} else {
+  Order = mongoose.model<IOrder>('Order', OrderSchema);
+}
+
+export { Order };

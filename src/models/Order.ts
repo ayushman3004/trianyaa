@@ -10,12 +10,20 @@ export interface IOrderItem {
   tier: string;
 }
 
+export interface IOrderAddon {
+  addonId: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 export type OrderStatus = 'Pending' | 'Confirmed' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
 export type OrderSource = 'whatsapp' | 'direct';
 
 export interface IOrder extends Document {
   userId: mongoose.Types.ObjectId;
   items: IOrderItem[];
+  addons?: IOrderAddon[];
   totalAmount: number;
   shippingAddress: {
     fullName: string;
@@ -44,6 +52,14 @@ const OrderSchema = new Schema<IOrder>(
         quantity: { type: Number, required: true },
         image: { type: String, default: '' },
         tier: { type: String, required: true },
+      },
+    ],
+    addons: [
+      {
+        addonId: { type: String, required: true },
+        name: { type: String, required: true },
+        price: { type: Number, required: true },
+        quantity: { type: Number, required: true, default: 1 },
       },
     ],
     totalAmount: { type: Number, required: true },
@@ -75,21 +91,10 @@ const OrderSchema = new Schema<IOrder>(
 // Safely get or create the model — handles Next.js hot-reload model caching
 let Order: Model<IOrder>;
 
-if (mongoose.models.Order) {
-  // If the cached model's schema has the old enum, overwrite it
-  const cachedEnums: string[] = (mongoose.models.Order.schema.path('status') as { options?: { enum?: string[] } })?.options?.enum ?? [];
-  if (!cachedEnums.includes('Pending')) {
-    // Old schema cached — delete and re-register
-    const models = mongoose.models as Record<string, unknown>;
-    delete models['Order'];
-    const connModels = mongoose.connection.models as Record<string, unknown>;
-    delete connModels['Order'];
-    Order = mongoose.model<IOrder>('Order', OrderSchema);
-  } else {
-    Order = mongoose.models.Order as Model<IOrder>;
-  }
-} else {
-  Order = mongoose.model<IOrder>('Order', OrderSchema);
+if (mongoose.models && mongoose.models.Order) {
+  delete (mongoose.models as any).Order;
 }
+Order = mongoose.model<IOrder>('Order', OrderSchema);
 
 export { Order };
+

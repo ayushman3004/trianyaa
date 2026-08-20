@@ -11,10 +11,18 @@ interface OrderItem {
   tier: string;
 }
 
+interface AdminOrderAddon {
+  addonId: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 interface AdminOrder {
   _id: string;
   userId: { _id: string; name?: string; email?: string } | string;
   items: OrderItem[];
+  addons?: AdminOrderAddon[];
   totalAmount: number;
   orderSource?: string;
   shippingAddress: {
@@ -268,11 +276,11 @@ export default function AdminOrdersPage() {
                   </div>
                 </div>
 
-                {/* Expanded: items list */}
+                {/* Expanded: items & add-ons list */}
                 {isExpanded && (
                   <div style={{ padding: '16px 20px' }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-gray)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      Items
+                      Items & Add-ons
                     </div>
                     <ul style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 0, margin: 0, listStyle: 'none' }}>
                       {order.items.map((item, i) => (
@@ -298,6 +306,29 @@ export default function AdminOrdersPage() {
                           </div>
                           <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--charcoal)' }}>
                             ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                          </div>
+                        </li>
+                      ))}
+
+                      {order.addons && order.addons.length > 0 && order.addons.map((addon, ai) => (
+                        <li key={`addon-${ai}`} style={{ display: 'flex', gap: 14, alignItems: 'center', background: 'var(--terracotta-pale, #FDF0EC)', padding: '8px 12px', borderRadius: 6 }}>
+                          <div style={{
+                            width: 36, height: 36, borderRadius: 6,
+                            background: '#fff',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 18,
+                          }}>
+                            🍫
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--charcoal)' }}>
+                              {addon.name} <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--terracotta)' }}>(Add-on)</span>
+                            </div>
+                            <div style={{ fontSize: 11, color: 'var(--warm-gray)' }}>
+                              Qty {addon.quantity} · ₹{addon.price.toLocaleString('en-IN')} each
+                            </div>
+                          </div>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--terracotta)' }}>
+                            ₹{(addon.price * addon.quantity).toLocaleString('en-IN')}
                           </div>
                         </li>
                       ))}

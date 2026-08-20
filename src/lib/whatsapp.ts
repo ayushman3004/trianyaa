@@ -8,6 +8,12 @@ export interface WAOrderItem {
   quantity: number;
 }
 
+export interface WAAddonItem {
+  addonId: string;
+  name: string;
+  price: number;
+}
+
 export interface WAShippingAddress {
   fullName: string;
   phone: string;
@@ -22,8 +28,11 @@ export function formatOrderMessage(
   items: WAOrderItem[],
   address: WAShippingAddress,
   shippingFee: number,
+  addons: WAAddonItem[] = [],
 ): string {
-  const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const itemSubtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const addonTotal = addons.reduce((s, a) => s + a.price, 0);
+  const subtotal = itemSubtotal + addonTotal;
   const total = subtotal + shippingFee;
 
   const itemLines = items
@@ -34,6 +43,10 @@ export function formatOrderMessage(
         `   Tier: ${item.tier} | Qty: ${item.quantity} | ₹${(item.price * item.quantity).toLocaleString('en-IN')}`,
     )
     .join('\n\n');
+
+  const addonLines = addons.length > 0
+    ? addons.map((a) => `• *${a.name}* — ₹${a.price.toLocaleString('en-IN')}`).join('\n')
+    : null;
 
   const addr = [
     address.addressLine1,
@@ -49,6 +62,7 @@ export function formatOrderMessage(
     '',
     '*Items:*',
     itemLines,
+    ...(addonLines ? ['', '*Add-ons:*', addonLines] : []),
     '',
     '*Shipping To:*',
     address.fullName,

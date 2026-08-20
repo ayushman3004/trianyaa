@@ -1512,6 +1512,38 @@ button { cursor: pointer; font-family: var(--font-sans); border: none; }
   border-color: var(--terracotta);
   box-shadow: 0 0 0 3px rgba(196,98,74,.12);
 }
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.password-input-wrapper .form-input {
+  padding-right: 44px;
+}
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--warm-gray);
+  border-radius: var(--r-sm);
+  transition: color .2s ease, transform .15s ease;
+}
+.password-toggle-btn:hover {
+  color: var(--charcoal);
+}
+.password-toggle-btn:focus-visible {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 1px;
+}
 .form-error {
   background: #FFF0EE;
   border: 1.5px solid var(--terracotta-pale);

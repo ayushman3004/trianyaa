@@ -20,19 +20,19 @@ interface AdminOrderAddon {
 
 interface AdminOrder {
   _id: string;
-  userId: { _id: string; name?: string; email?: string } | string;
+  userId?: { _id?: string; name?: string; email?: string } | string | null;
   items: OrderItem[];
   addons?: AdminOrderAddon[];
   totalAmount: number;
   orderSource?: string;
-  shippingAddress: {
-    fullName: string;
-    phone: string;
-    addressLine1: string;
+  shippingAddress?: {
+    fullName?: string;
+    phone?: string;
+    addressLine1?: string;
     addressLine2?: string;
-    city: string;
-    state: string;
-    postalCode: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
   };
   status: string;
   createdAt: string;
@@ -91,11 +91,19 @@ export default function AdminOrdersPage() {
     }
   }
 
-  const customerName = (o: AdminOrder) =>
-    typeof o.userId === 'object' ? (o.userId.name || o.userId.email || 'Unknown') : 'Unknown';
+  const customerName = (o: AdminOrder) => {
+    if (o.userId && typeof o.userId === 'object') {
+      return o.userId.name || o.userId.email || o.shippingAddress?.fullName || 'Guest';
+    }
+    return o.shippingAddress?.fullName || (typeof o.userId === 'string' ? o.userId : 'Guest');
+  };
 
-  const customerEmail = (o: AdminOrder) =>
-    typeof o.userId === 'object' ? (o.userId.email || '') : '';
+  const customerEmail = (o: AdminOrder) => {
+    if (o.userId && typeof o.userId === 'object') {
+      return o.userId.email || '';
+    }
+    return '';
+  };
 
   return (
     <div>
@@ -213,10 +221,14 @@ export default function AdminOrdersPage() {
 
                   {/* Shipping address */}
                   <div style={{ fontSize: 12, color: 'var(--warm-gray)', lineHeight: 1.5 }}>
-                    <div style={{ fontWeight: 600, color: 'var(--charcoal)' }}>{order.shippingAddress.fullName}</div>
-                    <div>{order.shippingAddress.addressLine1}</div>
-                    <div>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}</div>
-                    <div>📞 {order.shippingAddress.phone}</div>
+                    <div style={{ fontWeight: 600, color: 'var(--charcoal)' }}>
+                      {order.shippingAddress?.fullName || '—'}
+                    </div>
+                    {order.shippingAddress?.addressLine1 && <div>{order.shippingAddress.addressLine1}</div>}
+                    <div>
+                      {[order.shippingAddress?.city, order.shippingAddress?.state, order.shippingAddress?.postalCode].filter(Boolean).join(', ') || 'No address provided'}
+                    </div>
+                    {order.shippingAddress?.phone && <div>📞 {order.shippingAddress.phone}</div>}
                   </div>
 
                   {/* Amount + items count */}

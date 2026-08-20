@@ -22,7 +22,7 @@ function AdminSidebar() {
         <Link href="/" style={{ marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,.1)', paddingTop: '12px' }}>
           🏠 View Store
         </Link>
-        <Link href="/api/auth/logout">🚪 Logout</Link>
+        <a href="/api/auth/logout">🚪 Logout</a>
       </nav>
     </aside>
   );

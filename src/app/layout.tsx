@@ -5,6 +5,9 @@ import { CartProvider } from '@/context/CartContext';
 import { WishlistProvider } from '@/context/WishlistContext';
 import CartDrawer from '@/components/CartDrawer';
 import WishlistDrawer from '@/components/WishlistDrawer';
+import { CookieConsentProvider } from '@/components/cookie-consent/CookieProvider';
+import CookieConsentBanner from '@/components/cookie-consent/CookieConsent';
+import CookiePreferences from '@/components/cookie-consent/CookiePreferences';
 
 export const metadata: Metadata = {
   title: 'TRIANYAA — Handmade Crochet & Yarn Craft Brand',
@@ -26,13 +29,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <CartProvider>
-          <WishlistProvider>
-            {children}
-            <CartDrawer />
-            <WishlistDrawer />
-          </WishlistProvider>
-        </CartProvider>
+        <CookieConsentProvider>
+          <CartProvider>
+            <WishlistProvider>
+              {children}
+              <CartDrawer />
+              <WishlistDrawer />
+            </WishlistProvider>
+          </CartProvider>
+          <CookieConsentBanner />
+          <CookiePreferences />
+        </CookieConsentProvider>
       </body>
     </html>
   );

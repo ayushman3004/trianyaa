@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useCookieConsent } from './cookie-consent/CookieProvider';
 
 const benefits = [
   {
@@ -69,6 +70,7 @@ const socialLinks = [
 export default function NewsletterFooter() {
   const [email, setEmail] = useState('');
   const [joined, setJoined] = useState(false);
+  const { openPreferences } = useCookieConsent();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -181,6 +183,14 @@ export default function NewsletterFooter() {
             {policyLinks.map((p) => (
               <Link key={p.label} href={p.href}>{p.label}</Link>
             ))}
+            <button
+              type="button"
+              className="footer-cookie-settings-btn"
+              onClick={openPreferences}
+              aria-label="Open cookie preferences"
+            >
+              Cookie Settings
+            </button>
           </div>
         </div>
 

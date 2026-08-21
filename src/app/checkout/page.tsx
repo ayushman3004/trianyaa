@@ -18,7 +18,7 @@ interface AddonItem {
 }
 
 export default function CheckoutPage() {
-  const { items, totalPrice, totalItems, clearCart } = useCart();
+  const { items, totalPrice, totalItems, clearCart, couponCode, discountAmount } = useCart();
   const router = useRouter();
 
   // Form states
@@ -108,8 +108,9 @@ export default function CheckoutPage() {
   const selectedAddons = availableAddons.filter((a) => selectedAddonIds.includes(a._id));
   const addonsTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
   const subtotalWithAddons = totalPrice + addonsTotal;
-  const shippingFee = subtotalWithAddons >= 999 ? 0 : 60;
-  const finalTotal = subtotalWithAddons + shippingFee;
+  const afterDiscount = subtotalWithAddons - discountAmount;
+  const shippingFee = afterDiscount >= 999 ? 0 : 60;
+  const finalTotal = afterDiscount + shippingFee;
 
   async function handleWhatsAppOrder(e: React.FormEvent) {
     e.preventDefault();
@@ -560,6 +561,13 @@ export default function CheckoutPage() {
                     <span>₹{addon.price.toLocaleString('en-IN')}</span>
                   </div>
                 ))}
+
+                {discountAmount > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#25a55f', fontWeight: 600 }}>
+                    <span>Discount ({couponCode})</span>
+                    <span>−₹{discountAmount.toLocaleString('en-IN')}</span>
+                  </div>
+                )}
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--warm-gray)' }}>
                   <span>Shipping</span>

@@ -1,6 +1,6 @@
 // src/components/CartDrawer.tsx
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 
@@ -11,7 +11,9 @@ const TIER_COLOR: Record<string, string> = {
 };
 
 export default function CartDrawer() {
-  const { items, isOpen, totalItems, totalPrice, removeItem, updateQty, clearCart, closeCart } = useCart();
+  const { items, isOpen, totalItems, totalPrice, couponCode, discountPercent, discountAmount, removeItem, updateQty, clearCart, closeCart, applyCoupon, removeCoupon } = useCart();
+  const [couponInput, setCouponInput] = useState('');
+  const [couponError, setCouponError] = useState('');
 
   // Prevent body scroll while drawer open
   useEffect(() => {
@@ -156,21 +158,80 @@ export default function CartDrawer() {
               )}
             </div>
 
+            {/* Coupon code input */}
+            <div className="cart-coupon-section">
+              {couponCode ? (
+                <div className="cart-coupon-applied">
+                  <div className="cart-coupon-applied-info">
+                    <span className="cart-coupon-tag">🏷️ {couponCode}</span>
+                    <span className="cart-coupon-saving">−{discountPercent}% off</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="cart-coupon-remove"
+                    onClick={removeCoupon}
+                    aria-label="Remove coupon"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <div className="cart-coupon-form">
+                  <input
+                    type="text"
+                    className="cart-coupon-input"
+                    placeholder="Coupon code"
+                    value={couponInput}
+                    onChange={(e) => { setCouponInput(e.target.value); setCouponError(''); }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const err = applyCoupon(couponInput);
+                        if (err) setCouponError(err);
+                        else { setCouponInput(''); setCouponError(''); }
+                      }
+                    }}
+                    id="cart-coupon-input"
+                    aria-label="Enter coupon code"
+                  />
+                  <button
+                    type="button"
+                    className="cart-coupon-apply-btn"
+                    onClick={() => {
+                      const err = applyCoupon(couponInput);
+                      if (err) setCouponError(err);
+                      else { setCouponInput(''); setCouponError(''); }
+                    }}
+                    disabled={!couponInput.trim()}
+                  >
+                    Apply
+                  </button>
+                </div>
+              )}
+              {couponError && <div className="cart-coupon-error">{couponError}</div>}
+            </div>
+
             {/* Order summary */}
             <div className="cart-summary">
               <div className="cart-summary-row">
                 <span>Subtotal ({totalItems} {totalItems === 1 ? 'item' : 'items'})</span>
                 <span>₹{totalPrice.toLocaleString('en-IN')}</span>
               </div>
+              {discountAmount > 0 && (
+                <div className="cart-summary-row cart-summary-discount">
+                  <span>Discount ({couponCode})</span>
+                  <span>−₹{discountAmount.toLocaleString('en-IN')}</span>
+                </div>
+              )}
               <div className="cart-summary-row">
                 <span>Shipping</span>
-                <span style={{ color: totalPrice >= 999 ? 'var(--sage)' : 'inherit' }}>
-                  {totalPrice >= 999 ? 'FREE' : '₹60'}
+                <span style={{ color: (totalPrice - discountAmount) >= 999 ? 'var(--sage)' : 'inherit' }}>
+                  {(totalPrice - discountAmount) >= 999 ? 'FREE' : '₹60'}
                 </span>
               </div>
               <div className="cart-summary-row total">
                 <span>Total</span>
-                <span>₹{(totalPrice + (totalPrice >= 999 ? 0 : 60)).toLocaleString('en-IN')}</span>
+                <span>₹{((totalPrice - discountAmount) + ((totalPrice - discountAmount) >= 999 ? 0 : 60)).toLocaleString('en-IN')}</span>
               </div>
             </div>
 

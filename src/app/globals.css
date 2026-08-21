@@ -2189,6 +2189,125 @@ button { cursor: pointer; font-family: var(--font-sans); border: none; }
   border-top: 1.5px solid rgba(44,44,44,.1);
   margin-top: 4px;
 }
+.cart-summary-discount {
+  color: #25a55f !important;
+  font-weight: 600;
+}
+
+/* ── Coupon section ────────────────────────────────────────── */
+.cart-coupon-section {
+  padding: 0 0 4px;
+}
+
+.cart-coupon-form {
+  display: flex;
+  gap: 8px;
+}
+
+.cart-coupon-input {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  border: 1.5px solid rgba(44,44,44,.15);
+  border-radius: var(--r-sm);
+  background: #fff;
+  color: var(--charcoal);
+  outline: none;
+  transition: border-color .2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cart-coupon-input::placeholder {
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--warm-gray);
+}
+
+.cart-coupon-input:focus {
+  border-color: var(--terracotta);
+}
+
+.cart-coupon-apply-btn {
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  border: 1.5px solid var(--terracotta);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--terracotta);
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+
+.cart-coupon-apply-btn:hover:not(:disabled) {
+  background: var(--terracotta);
+  color: #fff;
+}
+
+.cart-coupon-apply-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cart-coupon-applied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(37, 165, 95, 0.08);
+  border: 1.5px solid rgba(37, 165, 95, 0.25);
+  border-radius: var(--r-sm);
+}
+
+.cart-coupon-applied-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-coupon-tag {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a7a45;
+  letter-spacing: 0.03em;
+}
+
+.cart-coupon-saving {
+  font-size: 12px;
+  font-weight: 600;
+  color: #25a55f;
+  background: rgba(37, 165, 95, 0.12);
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+}
+
+.cart-coupon-remove {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--warm-gray);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: all .15s;
+  line-height: 1;
+}
+
+.cart-coupon-remove:hover {
+  background: rgba(44,44,44,.08);
+  color: var(--charcoal);
+}
+
+.cart-coupon-error {
+  font-size: 12px;
+  color: #d44;
+  margin-top: 6px;
+  padding-left: 2px;
+}
 
 /* Checkout button */
 .cart-checkout-btn {

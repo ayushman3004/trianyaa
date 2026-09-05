@@ -1,8 +1,9 @@
 // src/app/auth/register/page.tsx
 'use client';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 function TrianyaaLogoSmall() {
   return (
@@ -16,7 +17,7 @@ function TrianyaaLogoSmall() {
   );
 }
 
-export default function RegisterPage() {
+function RegisterForm() {
   const [email, setEmail]               = useState('');
   const [password, setPassword]         = useState('');
   const [confirm, setConfirm]           = useState('');
@@ -25,6 +26,10 @@ export default function RegisterPage() {
   const [error, setError]               = useState('');
   const [loading, setLoading]           = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login: setAuthUser } = useAuth();
+
+  const redirectParam = searchParams.get('redirect');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -38,13 +43,25 @@ export default function RegisterPage() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Registration failed.'); return; }
-      router.push('/');
+      
+      setAuthUser(data.user);
+      router.refresh();
+
+      const safeRedirect = redirectParam && redirectParam.startsWith('/') && !redirectParam.startsWith('//')
+        ? redirectParam
+        : '/';
+
+      router.push(safeRedirect);
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
   }
+
+  const loginHref = redirectParam
+    ? `/auth/login?redirect=${encodeURIComponent(redirectParam)}`
+    : '/auth/login';
 
   return (
     <div className="auth-page">
@@ -155,12 +172,26 @@ export default function RegisterPage() {
 
         <div className="auth-switch">
           Already have an account?{' '}
-          <Link href="/auth/login">Sign in →</Link>
+          <Link href={loginHref}>Sign in →</Link>
         </div>
         <div className="auth-switch" style={{ marginTop: 8 }}>
           <Link href="/" style={{ color: 'var(--warm-gray)', fontSize: 13 }}>← Back to homepage</Link>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="auth-page">
+        <div className="auth-card" style={{ textAlign: 'center', padding: '60px 20px' }}>
+          <p className="serif" style={{ fontSize: 18, color: 'var(--charcoal)' }}>Loading sign up...</p>
+        </div>
+      </div>
+    }>
+      <RegisterForm />
+    </Suspense>
   );
 }

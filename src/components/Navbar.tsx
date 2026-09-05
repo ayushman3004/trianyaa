@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
+import { useAuth } from '@/context/AuthContext';
 
 function TrianyaaLightLogo() {
   return (
@@ -32,16 +33,11 @@ function TrianyaaLightLogo() {
   );
 }
 
-interface UserSession {
-  email: string;
-  role: string;
-}
-
 export default function Navbar() {
   const router = useRouter();
   const { totalItems, openCart } = useCart();
   const { items: wishlistItems, openWishlist } = useWishlist();
-  const [user, setUser] = useState<UserSession | null>(null);
+  const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -57,15 +53,6 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          setUser(data.user);
-        }
-      })
-      .catch(() => {});
-
     fetch('/api/settings?key=logoUrl')
       .then((res) => res.json())
       .then((data) => {
@@ -75,10 +62,9 @@ export default function Navbar() {
   }, []);
 
   async function handleLogout() {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    setUser(null);
+    await logout();
     setDropdownOpen(false);
-    window.location.reload();
+    router.refresh();
   }
 
   // Close dropdown on click outside

@@ -89,6 +89,7 @@ interface CartContextValue {
   couponCode: string | null;
   discountPercent: number;
   discountAmount: number;
+  isHydrated: boolean;
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
   updateQty: (id: string, quantity: number) => void;
@@ -109,6 +110,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, { items: [], isOpen: false });
   const [couponCode, setCouponCode] = useState<string | null>(null);
   const [discountPercent, setDiscountPercent] = useState(0);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     try {
@@ -127,6 +129,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch { /* ignore */ }
+    setIsHydrated(true);
   }, []);
 
   useEffect(() => {
@@ -174,7 +177,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const discountAmount = couponCode ? Math.round(totalPrice * discountPercent / 100) : 0;
 
   return (
-    <CartContext.Provider value={{ items: state.items, isOpen: state.isOpen, totalItems, totalPrice, couponCode, discountPercent, discountAmount, addItem, removeItem, updateQty, clearCart, openCart, closeCart, applyCoupon, removeCoupon }}>
+    <CartContext.Provider value={{ items: state.items, isOpen: state.isOpen, totalItems, totalPrice, couponCode, discountPercent, discountAmount, isHydrated, addItem, removeItem, updateQty, clearCart, openCart, closeCart, applyCoupon, removeCoupon }}>
       {children}
     </CartContext.Provider>
   );

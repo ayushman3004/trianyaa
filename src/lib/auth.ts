@@ -33,11 +33,13 @@ export function verifySessionToken(token: string): SessionPayload | null {
 }
 
 export function getSessionCookieOptions() {
+  const domain = process.env.COOKIE_DOMAIN?.trim();
   return {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax' as const,
     path: '/',
     maxAge: COOKIE_MAX_AGE,
+    ...(domain ? { domain } : {}),
   };
 }

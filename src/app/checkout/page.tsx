@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/Navbar';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import NewsletterFooter from '@/components/NewsletterFooter';
@@ -18,7 +19,8 @@ interface AddonItem {
 }
 
 export default function CheckoutPage() {
-  const { items, totalPrice, totalItems, clearCart, couponCode, discountAmount } = useCart();
+  const { items, totalPrice, totalItems, clearCart, couponCode, discountAmount, isHydrated } = useCart();
+  const { status, user } = useAuth();
   const router = useRouter();
 
   // Form states
@@ -46,6 +48,13 @@ export default function CheckoutPage() {
     { id: 'Letter', label: '✉️ Letter' },
   ];
 
+  // Auth verification: only redirect to login once definitively determined to be unauthenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.replace('/auth/login?redirect=%2Fcheckout');
+    }
+  }, [status, router]);
+
   // Fetch available add-ons
   useEffect(() => {
     fetch('/api/addons')
@@ -61,8 +70,9 @@ export default function CheckoutPage() {
       .catch(() => { });
   }, []);
 
-  // Fetch profile to pre-fill address
+  // Fetch profile to pre-fill address once authenticated
   useEffect(() => {
+    if (status !== 'authenticated') return;
     fetch('/api/auth/profile')
       .then((res) => {
         if (!res.ok) throw new Error();
@@ -70,24 +80,24 @@ export default function CheckoutPage() {
       })
       .then((data) => {
         if (data.user) {
-          setFullName(data.user.name || '');
-          setPhone(data.user.phone || '');
-          setAddressLine1(data.user.addressLine1 || '');
-          setAddressLine2(data.user.addressLine2 || '');
-          setCity(data.user.city || '');
-          setState(data.user.state || '');
-          setPostalCode(data.user.postalCode || '');
+          setFullName((prev) => prev || data.user.name || '');
+          setPhone((prev) => prev || data.user.phone || '');
+          setAddressLine1((prev) => prev || data.user.addressLine1 || '');
+          setAddressLine2((prev) => prev || data.user.addressLine2 || '');
+          setCity((prev) => prev || data.user.city || '');
+          setState((prev) => prev || data.user.state || '');
+          setPostalCode((prev) => prev || data.user.postalCode || '');
         }
       })
       .catch(() => { });
-  }, []);
+  }, [status]);
 
-  // Redirect to shop if cart is empty
+  // Redirect to shop only after cart is hydrated and confirmed empty
   useEffect(() => {
-    if (items.length === 0 && !waLoading) {
+    if (isHydrated && items.length === 0 && !waLoading && status === 'authenticated') {
       router.push('/shop');
     }
-  }, [items, waLoading, router]);
+  }, [isHydrated, items.length, waLoading, status, router]);
 
   function validateAddress(): boolean {
     if (!fullName.trim() || !phone.trim() || !addressLine1.trim() || !city.trim() || !state.trim() || !postalCode.trim()) {
@@ -183,7 +193,34 @@ export default function CheckoutPage() {
     router.push('/dashboard?orderPlaced=true');
   }
 
-  if (items.length === 0) {
+  if (status === 'loading' || !isHydrated) {
+    return (
+      <main>
+        <AnnouncementBar />
+        <Navbar />
+        <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+          <div style={{
+            width: 42,
+            height: 42,
+            border: '3px solid rgba(196, 98, 74, 0.2)',
+            borderTopColor: 'var(--terracotta)',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite',
+          }} />
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <p className="serif" style={{ fontSize: 18, color: 'var(--charcoal)', margin: 0 }}>
+            Verifying your session...
+          </p>
+          <p style={{ fontSize: 13, color: 'var(--warm-gray)', margin: 0 }}>
+            Setting up your secure checkout
+          </p>
+        </div>
+        <NewsletterFooter />
+      </main>
+    );
+  }
+
+  if (status === 'unauthenticated' || items.length === 0) {
     return null;
   }
 

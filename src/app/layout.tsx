@@ -9,6 +9,8 @@ import { CookieConsentProvider } from '@/components/cookie-consent/CookieProvide
 import CookieConsentBanner from '@/components/cookie-consent/CookieConsent';
 import CookiePreferences from '@/components/cookie-consent/CookiePreferences';
 
+import { AuthProvider } from '@/context/AuthContext';
+
 export const metadata: Metadata = {
   title: 'TRIANYAA — Handmade Crochet & Yarn Craft Brand',
   description:
@@ -30,13 +32,15 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <CookieConsentProvider>
-          <CartProvider>
-            <WishlistProvider>
-              {children}
-              <CartDrawer />
-              <WishlistDrawer />
-            </WishlistProvider>
-          </CartProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                {children}
+                <CartDrawer />
+                <WishlistDrawer />
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
           <CookieConsentBanner />
           <CookiePreferences />
         </CookieConsentProvider>

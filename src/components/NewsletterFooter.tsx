@@ -194,9 +194,26 @@ export default function NewsletterFooter() {
           </div>
         </div>
 
-        {/* 4. COPYRIGHT */}
-        <div className="footer-copy">
-          © {new Date().getFullYear()} TRIANYAA. Handmade with ♥ in India.
+        {/* 4. PRODUCT HUNT BADGE & COPYRIGHT */}
+        <div className="footer-badge-and-copy">
+          <a
+            href="https://www.producthunt.com/products/trianyaa?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-trianyaa"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-ph-badge"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1243389&theme=light&t=1788765407642"
+              alt="TRIANYAA - CRAFTED WITH LOVE, ONE STITCH AT A TIME | Product Hunt"
+              width="250"
+              height="54"
+              style={{ width: '250px', height: '54px' }}
+            />
+          </a>
+          <div className="footer-copy">
+            © {new Date().getFullYear()} TRIANYAA. Handmade with ♥ in India.
+          </div>
         </div>
       </div>
     </footer>

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://trianyaa.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://trianyaa.shop';
   const currentDate = new Date();
 
   // Public static core routes with their SEO priority and update frequencies

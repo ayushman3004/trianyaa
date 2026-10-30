@@ -12,7 +12,7 @@ import CookiePreferences from '@/components/cookie-consent/CookiePreferences';
 import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://trianyaa.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://trianyaa.shop'),
   title: 'TRIANYAA — Handmade Crochet & Yarn Craft Brand',
   description:
     'Discover curated yarns, crochet kits, and handmade keychains by TRIANYAA. Shop Basic, Standard, and Premium craft kits — made with love, one stitch at a time.',
